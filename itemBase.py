@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class itemBase():
 
     def __init__(self):
@@ -54,7 +53,7 @@ class itemBase():
     #展示所有物品
     def showAllItems(self):
         
-        print(self.items['Name', 'Owner'])
+        print(self.items['Name', 'OwnerID'])
 
         return 
 
