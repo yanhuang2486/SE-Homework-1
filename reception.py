@@ -1,6 +1,5 @@
-import pandas as pd
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import ttk, messagebox
 from itemBase import itemBase
 
 class ItemManagerGUI:
