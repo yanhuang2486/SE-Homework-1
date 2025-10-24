@@ -1,3 +1,8 @@
+'''
+作者：yanhuang2486
+功能：提供“复活”软件与用户的GUI交互界面，包括显示物品列表，增删查等功能
+'''
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from itemBase import itemBase
@@ -40,10 +45,10 @@ class ItemManagerGUI:
         searchFrame.grid(row=2, column=0, columnspan=2, pady=(0, 10), sticky=(tk.W, tk.E))
         
         ttk.Label(searchFrame, text="搜索关键词:").pack(side=tk.LEFT)
-        self.search_entry = ttk.Entry(searchFrame, width=30)
-        self.search_entry.pack(side=tk.LEFT, padx=5)
-        self.search_entry.bind('<Return>', lambda event: self.search_item())
-        
+        self.searchEntry = ttk.Entry(searchFrame, width=30)
+        self.searchEntry.pack(side=tk.LEFT, padx=5)
+        self.searchEntry.bind('<Return>', lambda event: self.searchItem())
+
         # 结果显示区域
         resultFrame = ttk.Frame(mainFrame)
         resultFrame.grid(row=3, column=0, columnspan=2, pady=(0, 10), sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -73,7 +78,7 @@ class ItemManagerGUI:
         statusBar.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E))
         
         # 初始显示所有物品
-        self.refresh_item_list()
+        self.refreshItemList()
 
     def addItem(self):
         # 创建添加物品对话框
@@ -84,17 +89,17 @@ class ItemManagerGUI:
             name, price, description, owner, contact = dialog.result
             result = self.itemBase.addItem(name, price, description, owner, contact)
             messagebox.showinfo("添加结果", result)
-            self.refresh_item_list()
+            self.refreshItemList()
 
     def searchItem(self):
-        keyword = self.search_entry.get().strip()
+        keyword = self.searchEntry.get().strip()
         if not keyword:
             messagebox.showwarning("输入错误", "请输入搜索关键词")
             return
         
         results = self.itemBase.searchItem(keyword)
-        self.update_treeview(results)
-        self.status_var.set(f"搜索到 {len(results)} 件匹配物品")
+        self.updateTreeview(results)
+        self.statusVar.set(f"搜索到 {len(results)} 件匹配物品")
 
     def deleteItem(self):
         selected = self.tree.selection()
@@ -102,31 +107,31 @@ class ItemManagerGUI:
             messagebox.showwarning("选择错误", "请先选择要删除的物品")
             return
         
-        item_id = int(self.tree.item(selected[0])['values'][0])
-        item_name = self.tree.item(selected[0])['values'][1]
-        
-        if messagebox.askyesno("确认删除", f"确定要删除物品 '{item_name}' 吗？"):
-            result = self.itemBase.deleteItem(item_id)
+        itemId = int(self.tree.item(selected[0])['values'][0])
+        itemName = self.tree.item(selected[0])['values'][1]
+
+        if messagebox.askyesno("确认删除", f"确定要删除物品 '{itemName}' 吗？"):
+            result = self.itemBase.deleteItem(itemId)
             messagebox.showinfo("删除结果", result)
-            self.refresh_item_list()
+            self.refreshItemList()
 
     def showAllItems(self):
-        self.refresh_item_list()
-        self.status_var.set(f"显示所有 {self.itemBase.itemNum} 件物品")
+        self.refreshItemList()
+        self.statusVar.set(f"显示所有 {self.itemBase.itemNum} 件物品")
 
-    def refresh_item_list(self):
-        all_items = self.itemBase.showAllItems()
-        self.update_treeview(all_items)
+    def refreshItemList(self):
+        allItems = self.itemBase.showAllItems()
+        self.updateTreeview(allItems)
         self.statusVar.set(f"当前共有 {self.itemBase.itemNum} 件物品")
 
-    def update_treeview(self, items_df):
+    def updateTreeview(self, itemsDf):
         # 清空树形视图
         for item in self.tree.get_children():
             self.tree.delete(item)
         
         # 添加新数据
-        if not items_df.empty:
-            for idx, row in items_df.iterrows():
+        if not itemsDf.empty:
+            for idx, row in itemsDf.iterrows():
                 self.tree.insert('', tk.END, values=(
                     idx, 
                     row['Name'], 
@@ -158,50 +163,50 @@ class AddItemDialog:
         
         # 物品名称
         ttk.Label(frame, text="物品名称:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.name_entry = ttk.Entry(frame, width=30)
-        self.name_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+        self.nameEntry = ttk.Entry(frame, width=30)
+        self.nameEntry.grid(row=0, column=1, sticky=(tk.W, tk.E), pady=5)
+
         # 物品价格
         ttk.Label(frame, text="物品价格:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.price_entry = ttk.Entry(frame, width=30)
-        self.price_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+        self.priceEntry = ttk.Entry(frame, width=30)
+        self.priceEntry.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=5)
+
         # 物品描述
         ttk.Label(frame, text="物品描述:").grid(row=2, column=0, sticky=tk.W, pady=5)
-        self.desc_text = tk.Text(frame, width=30, height=5)
-        self.desc_text.grid(row=2, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+        self.descText = tk.Text(frame, width=30, height=5)
+        self.descText.grid(row=2, column=1, sticky=(tk.W, tk.E), pady=5)
+
         # 所有者
         ttk.Label(frame, text="所有者:").grid(row=3, column=0, sticky=tk.W, pady=5)
-        self.owner_entry = ttk.Entry(frame, width=30)
-        self.owner_entry.grid(row=3, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+        self.ownerEntry = ttk.Entry(frame, width=30)
+        self.ownerEntry.grid(row=3, column=1, sticky=(tk.W, tk.E), pady=5)
+
         # 联系方式
         ttk.Label(frame, text="联系方式:").grid(row=4, column=0, sticky=tk.W, pady=5)
-        self.contact_entry = ttk.Entry(frame, width=30)
-        self.contact_entry.grid(row=4, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+        self.contactEntry = ttk.Entry(frame, width=30)
+        self.contactEntry.grid(row=4, column=1, sticky=(tk.W, tk.E), pady=5)
+
         # 按钮框架
-        button_frame = ttk.Frame(frame)
-        button_frame.grid(row=5, column=0, columnspan=2, pady=10)
-        
-        ttk.Button(button_frame, text="添加", command=self.ok).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="取消", command=self.cancel).pack(side=tk.LEFT, padx=5)
-        
+        buttonFrame = ttk.Frame(frame)
+        buttonFrame.grid(row=5, column=0, columnspan=2, pady=10)
+
+        ttk.Button(buttonFrame, text="添加", command=self.ok).pack(side=tk.LEFT, padx=5)
+        ttk.Button(buttonFrame, text="取消", command=self.cancel).pack(side=tk.LEFT, padx=5)
+
         # 配置网格权重
         frame.columnconfigure(1, weight=1)
         self.top.columnconfigure(0, weight=1)
         
         # 设置焦点
-        self.name_entry.focus()
+        self.nameEntry.focus()
 
     def ok(self):
-        name = self.name_entry.get().strip()
-        price = self.price_entry.get().strip()
-        description = self.desc_text.get("1.0", tk.END).strip()
-        owner = self.owner_entry.get().strip()
-        contact = self.contact_entry.get().strip()
-        
+        name = self.nameEntry.get().strip()
+        price = self.priceEntry.get().strip()
+        description = self.descText.get("1.0", tk.END).strip()
+        owner = self.ownerEntry.get().strip()
+        contact = self.contactEntry.get().strip()
+
         if not name:
             messagebox.showwarning("输入错误", "物品名称不能为空")
             return
